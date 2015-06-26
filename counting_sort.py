@@ -12,8 +12,7 @@ def counting_sort(arr=[],lower=0,upper=0):
 	sorted_arr=[]
 	for i in range(0,len(arr)):
 		sorted_arr.append(0)
-
-	for i in reversed(arr): #stable
+	for element in reversed(arr): #stable
 		sorted_arr[counter[element-lower]-1]=element
 		counter[element-lower]=counter[element-lower]-1
 	return sorted_arr
