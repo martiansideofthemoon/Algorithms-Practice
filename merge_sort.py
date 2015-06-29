@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import math,sys
 def merge(arr1=[],arr2=[]):
 	i=0

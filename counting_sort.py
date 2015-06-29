@@ -1,3 +1,4 @@
+#!/usr/bin/python
 def counting_sort(arr=[],lower=0,upper=0):
 	counter=[]
 	for i in range(0,upper-lower):
