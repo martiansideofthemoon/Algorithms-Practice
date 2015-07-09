@@ -48,7 +48,6 @@ def bfs(graph, start, goal):
 	while True:
 		if queue==[]:
 			break
-		print queue
 		new_nodes = graph.get_connected_nodes(queue[0][-1])
 		extended_list.extend([queue[0][-1]])
 		if goal in new_nodes:
@@ -68,21 +67,20 @@ def dfs(graph, start, goal):
 		return [start]
 	path = []
 	extended_list=[]
-	queue=[[start]]
+	stack=[[start]]
 	while True:
-		if queue==[]:
+		if stack==[]:
 			break
-		print queue
-		new_nodes = graph.get_connected_nodes(queue[0][-1])
-		extended_list.extend([queue[0][-1]])
+		new_nodes = graph.get_connected_nodes(stack[-1][-1])
+		extended_list.extend([stack[-1][-1]])
 		if goal in new_nodes:
-			path = queue[0]+[goal]
+			path = stack[-1]+[goal]
 			break
-		base_node = queue[0]
-		queue.pop(0)
+		base_node = stack[-1]
+		stack.pop(-1)
 		for node in new_nodes:
 			if not node in base_node and not node in extended_list:
-				queue = [base_node+[node]] + queue
+				stack = stack+[base_node+[node]]
 	return path
 	raise NotImplementedError
 
@@ -91,7 +89,28 @@ def dfs(graph, start, goal):
 ## Remember that hill-climbing is a modified version of depth-first search.
 ## Search direction should be towards lower heuristic values to the goal.
 def hill_climbing(graph, start, goal):
-    raise NotImplementedError
+	def heuristic(node):
+		return graph.get_heuristic(node,goal)
+	if start==goal:
+		return [start]
+	path = []
+	stack=[[start]]
+	while True:
+		#print stack
+		if stack==[]:
+			break
+		new_nodes = graph.get_connected_nodes(stack[-1][-1])
+		if goal in new_nodes:
+			path = stack[-1]+[goal]
+			break
+		base_node = stack[-1]
+		stack.pop(-1)
+		new_nodes = sorted(new_nodes,key=heuristic,reverse=True)
+		for node in new_nodes:
+			if not node in base_node:
+				stack = stack+[base_node+[node]]
+	return path
+	raise NotImplementedError
 
 ## Now we're going to implement beam search, a variation on BFS
 ## that caps the amount of memory used to store paths.  Remember,
@@ -99,7 +118,30 @@ def hill_climbing(graph, start, goal):
 ## The k top candidates are to be determined using the 
 ## graph get_heuristic function, with lower values being better values.
 def beam_search(graph, start, goal, beam_width):
-    raise NotImplementedError
+	def heuristic(path):
+		return graph.get_heuristic(path[-1],goal)
+	if start==goal:
+		return [start]
+	path = []
+	extended_list=[]
+	queue=[[start]]
+	while True:
+		if queue==[]:
+			break
+		if len(queue[0])==len(queue[-1]):
+			#path lengths are the same
+			queue = sorted(queue,key=heuristic)[0:beam_width]
+		new_nodes = graph.get_connected_nodes(queue[0][-1])
+		extended_list.extend([queue[0][-1]])
+		if goal in new_nodes:
+			path = queue[0]+[goal]
+			break
+		for node in new_nodes:
+			if not node in queue[0]:
+				queue += [queue[0]+[node]]
+		queue.pop(0)
+	return path
+	raise NotImplementedError
 
 ## Now we're going to try optimal search.  The previous searches haven't
 ## used edge distances in the calculation.
@@ -107,14 +149,73 @@ def beam_search(graph, start, goal, beam_width):
 ## This function takes in a graph and a list of node names, and returns
 ## the sum of edge lengths along the path -- the total distance in the path.
 def path_length(graph, node_names):
-    raise NotImplementedError
+	length=0
+	for i in range(0,len(node_names)-1):
+		length=length+graph.get_edge(node_names[i],node_names[i+1]).length
+	return length
+	raise NotImplementedError
 
 
 def branch_and_bound(graph, start, goal):
-    raise NotImplementedError
+	def get_path_len(node_names):
+		return path_length(graph,node_names)
+	if start==goal:
+		return [start]
+	path = []
+	path_len=1000000
+	stack=[[start]]
+	while True:
+		if path!=[]:
+			stack_len = len(stack)
+			for i in range(stack_len-1,0,-1):
+				if path_length(graph,stack[i])>path_len:
+					stack.pop(i)
+		if stack==[]:
+			break
+		new_nodes = graph.get_connected_nodes(stack[-1][-1])
+		base_node = stack[-1]
+		if goal in base_node:
+			path=base_node
+			break
+		stack.pop(-1)
+		for node in new_nodes:
+			if not node in base_node:
+				stack = stack+[base_node+[node]]
+		stack = sorted(stack,key=get_path_len,reverse=True)
+	return path
+	raise NotImplementedError
+
 
 def a_star(graph, start, goal):
-    raise NotImplementedError
+	def get_len(node_names):
+		return path_length(graph,node_names)+graph.get_heuristic(node_names[-1],goal)
+	if start==goal:
+		return [start]
+	path = []
+	extended_list=[]
+	stack=[[start]]
+	while True:
+		if path!=[]:
+			print path
+			stack_len = len(stack)
+			for i in range(stack_len-1,0,-1):
+				if path_length(graph,stack[i])>path_len:
+					stack.pop(i)
+		if stack==[]:
+			break
+		new_nodes = graph.get_connected_nodes(stack[-1][-1])
+		extended_list+=[stack[-1][-1]]
+		base_node = stack[-1]
+		if goal in base_node:
+			path=base_node
+			break
+		stack.pop(-1)
+		for node in new_nodes:
+			if not node in base_node and node not in extended_list:
+				stack = stack+[base_node+[node]]
+		stack = sorted(stack,key=get_len,reverse=True)
+	return path
+	raise NotImplementedError
 
 
 ## It's useful to determine if a graph has a consistent and admissible
@@ -123,11 +224,24 @@ def a_star(graph, start, goal):
 ## consistent, but not admissible?
 
 def is_admissible(graph, goal):
-    raise NotImplementedError
+	isAdmissable=True
+	for node in graph.nodes:
+		if graph.get_heuristic(node,goal)>path_length(graph,a_star(graph,node,goal)):
+			isAdmissable=False
+			break
+	return isAdmissable
+	raise NotImplementedError
 
 def is_consistent(graph, goal):
-    raise NotImplementedError
+	isConsistent=True
+	for node1 in graph.nodes:
+		for node2 in graph.nodes:
+			if abs(graph.get_heuristic(node1,goal)-graph.get_heuristic(node2,goal))>path_length(graph,a_star(graph,node1,node2)):
+				isConsistent=False
+				break
+	return isConsistent
+	raise NotImplementedError
 
-HOW_MANY_HOURS_THIS_PSET_TOOK = ''
-WHAT_I_FOUND_INTERESTING = ''
-WHAT_I_FOUND_BORING = ''
+HOW_MANY_HOURS_THIS_PSET_TOOK = '3'
+WHAT_I_FOUND_INTERESTING = 'dfdf'
+WHAT_I_FOUND_BORING = 'dfsd'
