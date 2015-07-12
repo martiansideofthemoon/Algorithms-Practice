@@ -14,7 +14,7 @@ from util import INFINITY
 #      1. MM will play better than AB.
 #      2. AB will play better than MM.
 #      3. They will play with the same level of skill.
-ANSWER1 = 0
+ANSWER1 = 3
 
 # 1.2. Two computerized players are playing a game with a time limit. Player MM
 # does minimax search with iterative deepening, and player AB does alpha-beta
@@ -24,7 +24,7 @@ ANSWER1 = 0
 #   1. MM will play better than AB.
 #   2. AB will play better than MM.
 #   3. They will play with the same level of skill.
-ANSWER2 = 0
+ANSWER2 = 2
 
 ### 2. Connect Four
 from connectfour import *
@@ -38,13 +38,13 @@ import tree_searcher
 ## grader-bot to play a game!
 ## 
 ## Uncomment this line to play a game as white:
-#run_game(human_player, basic_player)
+# run_game(human_player, basic_player)
 
 ## Uncomment this line to play a game as black:
 #run_game(basic_player, human_player)
 
 ## Or watch the computer play against itself:
-#run_game(basic_player, basic_player)
+# run_game(basic_player, basic_player)
 
 ## Change this evaluation function so that it tries to win as soon as possible,
 ## or lose as late as possible, when it decides that one side is certain to win.
@@ -55,8 +55,22 @@ def focused_evaluate(board):
     Given a board, return a numeric rating of how good
     that board is for the current player.
     A return value >= 1000 means that the current player has won;
-    a return value <= -1000 means that the current player has lost
-    """    
+    a return value <= -1000 means that the current player has lost.+
+    """
+    value=0
+    if board.is_game_over():
+      value=-1000
+    else:
+      # Calculate number of chains of player. One length chains late in game bad
+      progress = board.num_tokens_on_board()
+      for chain in board.chain_cells(board.get_current_player_id()):
+        if len(chain)==3:
+          value+=30
+        elif len(chain)==2:
+          value+=10-progress
+        elif len(chain)==1:
+          value-=progress
+    return value
     raise NotImplementedError
 
 
@@ -65,24 +79,47 @@ quick_to_win_player = lambda board: minimax(board, depth=4,
                                             eval_fn=focused_evaluate)
 
 ## You can try out your new evaluation function by uncommenting this line:
-#run_game(basic_player, quick_to_win_player)
+# run_game(basic_player, quick_to_win_player)
 
 ## Write an alpha-beta-search procedure that acts like the minimax-search
 ## procedure, but uses alpha-beta pruning to avoid searching bad ideas
 ## that can't improve the result. The tester will check your pruning by
 ## counting the number of static evaluations you make.
 ##
-## You can use minimax() in basicplayer.py as an example.
-def alpha_beta_search(board, depth,
-                      eval_fn,
-                      # NOTE: You should use get_next_moves_fn when generating
+## You can use minimax() in basicplayer.py as an example
+# NOTE: You should use get_next_moves_fn when generating
                       # next board configurations, and is_terminal_fn when
                       # checking game termination.
                       # The default functions set here will work
                       # for connect_four.
+def alpha_beta_find_board_value(board,depth,eval_fn,get_next_moves_fn,is_terminal_fn,stage,alpha,beta):
+  if is_terminal_fn(depth,board):
+    return eval_fn(board)
+  for move,new_board in get_next_moves_fn(board):
+    if stage=="min_stage":
+      pass
+
+
+def alpha_beta_search(board, depth,eval_fn,
                       get_next_moves_fn=get_all_next_moves,
-		      is_terminal_fn=is_terminal):
-    raise NotImplementedError
+                      is_terminal_fn=is_terminal):
+  best_val = None
+  alpha=-10000
+  beta=10000
+    for move, new_board in get_next_moves_fn(board):
+        val = -1 * alpha_beta_find_board_value(new_board, depth-1, eval_fn,
+                                            get_next_moves_fn,
+                                            is_terminal_fn,"min_stage",alpha,beta)
+        if val>alpha:
+          alpha = val
+          best_val = (alpha,move,new_board)
+            
+    #if verbose:
+    #   print "MINIMAX: Decided on column %d with rating %d" % (best_val[1], best_val[0])
+
+    return best_val[1]
+
+  raise NotImplementedError
 
 ## Now you should be able to search twice as deep in the same amount of time.
 ## (Of course, this alpha-beta-player won't work until you've defined
