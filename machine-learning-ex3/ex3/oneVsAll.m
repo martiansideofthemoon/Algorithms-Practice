@@ -10,13 +10,23 @@ function [all_theta] = oneVsAll(X, y, num_labels, lambda)
 % Some useful variables
 m = size(X, 1);
 n = size(X, 2);
-
 % You need to return the following variables correctly 
 all_theta = zeros(num_labels, n + 1);
 
 % Add ones to the X data matrix
-X = [ones(m, 1) X];
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+X = [ones(m, 1), X];
+initial_theta = zeros(n + 1, 1);
+for i=1:num_labels
+	sample_y = y == i;
+	%[cost1,row] = lrCostFunction(initial_theta,X,sample_y,lambda);
+	[row, cost] = ...
+	fmincg(@(t)(lrCostFunction(t, X, sample_y, lambda)), initial_theta, options);
+	all_theta(i,:)=row';
 
+endfor
+% Compute and display initial cost and gradient
+%all_theta[:]
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the following code to train num_labels
 %               logistic regression classifiers with regularization
