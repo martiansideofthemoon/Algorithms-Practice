@@ -16,12 +16,13 @@ public:
 		n=number;
 		list <int> new_list;
 		new_list.push_back(0); // count represented by list
-		list <int>::iterator new_iterator = new_list.begin();
+		new_list.push_back(n);
+		//list <int>::iterator new_iterator = new_list.begin();
 		for (int i=0;i<n;i++)
 		{
 			new_list.push_back(i);
-			new_iterator++;
-			list_iters.push_back(new_iterator);
+			//new_iterator++;
+			//list_iters.push_back(new_iterator);
 		}
 		count_values.push_back(new_list);
 		for (int i=0;i<n;i++)
@@ -29,12 +30,16 @@ public:
 		list <int>::iterator fill_list_iters = (*count_values.begin()).begin();
 		int i=0;
 		fill_list_iters++;
+		fill_list_iters++;
+		//fill_list_iters++;
 		while(fill_list_iters!=(*count_values.begin()).end())
 		{
-			list_iters[i]=fill_list_iters;
+			list_iters.push_back(fill_list_iters);
 			fill_list_iters++;
 			i++;	
 		}
+		for (int i=0;i<n;i++)
+			cout << *list_iters[i] << endl;
 		zero_pointer = count_values.begin();
 		print();
 		//count_list.push_back();
@@ -48,34 +53,40 @@ public:
 		{
 			list <int> new_list;
 			new_list.push_back(current_count+1);
+			new_list.push_back(1);
 			new_list.push_back(i);
 			(*count_list[i]).erase(list_iters[i]);
+			(*(++((*count_list[i]).begin())))--;
 			count_values.push_back(new_list);
-			list_iters[i] =++(*(--count_values.end())).begin();
+			list_iters[i] =++(++(*(--count_values.end())).begin());
 			//count_list[i]++;
-			if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+			if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 				count_values.erase(count_list[i]);
 			count_list[i]=--count_values.end();	
 		}
 		else if (*(*next_value).begin()==current_count+1)
 		{
 			(*count_list[i]).erase(list_iters[i]);
-			if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+			(*(++((*count_list[i]).begin())))--;
+			if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 				count_values.erase(count_list[i]);
 			count_list[i]=next_value;
 			(*next_value).push_back(i);
+			(*(++(*next_value).begin()))++;
 			list_iters[i]=--(*next_value).end();
 		}
 		else
 		{
 			list <int> new_list;
 			new_list.push_back(current_count+1);
+			new_list.push_back(1);
 			new_list.push_back(i);
 			(*count_list[i]).erase(list_iters[i]);
+			(*(++((*count_list[i]).begin())))--;
 			list<list<int> >::iterator new_pointer = count_values.insert(next_value,new_list);
-			list_iters[i] =++((*new_pointer).begin());
+			list_iters[i] =++++((*new_pointer).begin());
 			//count_list[i]++;
-			if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+			if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 				count_values.erase(count_list[i]);
 			count_list[i]=new_pointer;
 		}
@@ -88,15 +99,17 @@ public:
 		int current_count = *((*count_list[i]).begin());
 		if (prev_value==count_values.begin())
 		{
-			//cout << "block1" << endl;
+			cout << "block1" << endl;
 			list <int> new_list;
 			new_list.push_back(current_count-1);
+			new_list.push_back(1);
 			new_list.push_back(i);
 			(*count_list[i]).erase(list_iters[i]);
+			(*(++((*count_list[i]).begin())))--;
 			count_values.push_front(new_list);
-			list_iters[i] =++(*(count_values.begin())).begin();
+			list_iters[i] =++++(*(count_values.begin())).begin();
 			//count_list[i]++;
-			if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+			if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 				count_values.erase(count_list[i]);
 			count_list[i]=count_values.begin();	
 		}
@@ -105,25 +118,29 @@ public:
 			prev_value--;
 			if (*(*prev_value).begin()==current_count-1)
 			{
-				//cout << "block2" << endl;
+				cout << "block2" << endl;
 				(*count_list[i]).erase(list_iters[i]);
-				if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+				(*(++((*count_list[i]).begin())))--;
+				if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 					count_values.erase(count_list[i]);
 				count_list[i]=prev_value;
 				(*prev_value).push_back(i);
+				(*(++(*prev_value).begin()))++;
 				list_iters[i]=--(*prev_value).end();
 			}
 			else
 			{
-				//cout << "block3" << endl;
+				cout << "block3" << endl;
 				list <int> new_list;
 				new_list.push_back(current_count-1);
+				new_list.push_back(1);
 				new_list.push_back(i);
 				(*count_list[i]).erase(list_iters[i]);
+				(*(++((*count_list[i]).begin())))--;
 				list<list<int> >::iterator new_pointer = count_values.insert(count_list[i],new_list);
-				list_iters[i] =++((*new_pointer).begin());
+				list_iters[i] =++++((*new_pointer).begin());
 				//count_list[i]++;
-				if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+				if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 					count_values.erase(count_list[i]);
 				count_list[i]=new_pointer;
 			}
@@ -134,12 +151,15 @@ public:
 	{
 		int current_count = *((*count_list[i]).begin());
 		(*count_list[i]).erase(list_iters[i]);
-		if (++((*count_list[i]).begin())==(*count_list[i]).end() && current_count!=0)
+		(*(++((*count_list[i]).begin())))--;
+		if (++(++((*count_list[i]).begin()))==(*count_list[i]).end() && current_count!=0)
 			count_values.erase(count_list[i]);
 		count_list[i]=zero_pointer;
-		cout << "yolo" << endl;
+		//cout << "yolo" << endl;
 		(*zero_pointer).push_back(i);
+		(*(++(*zero_pointer).begin()))++;
 		list_iters[i]=--(*zero_pointer).end();	
+		print();
 	}
 	int count(int i)
 	{
@@ -159,11 +179,19 @@ public:
 			check_empty--;
 		list<int>::iterator max_list= (*check_empty).begin();
 		max_list++;
+		max_list++;
 		while (max_list!=(*check_empty).end())
 		{
 			cout << *max_list << endl;
 			max_list++;
 		}
+	}
+	int numMax()
+	{
+		list<list <int> >::iterator check_empty = --count_values.end();
+		if (++(*check_empty).begin()==(*check_empty).end())	
+			check_empty--;
+		return *(++(*check_empty).begin());
 	}
 	void print()
 	{
@@ -177,6 +205,7 @@ public:
 		{
 			list <int>::iterator it2 = (*it).begin();
 			cout << "Elements with count " << *it2 << " :- ";
+			it2++;
 			it2++;
 			while(it2!=(*it).end())
 			{
@@ -205,10 +234,16 @@ int main()
 	d1.decrement(1);
 	d1.decrement(0);
 	d1.decrement(0);
-
 	d1.decrement(0);
 	d1.decrement(1);
 	d1.reset(3);
+	d1.reset(1);
+	d1.reset(2);
+	d1.reset(4);
+	d1.reset(0);
+	d1.reset(0);
+	cout << "Find max is " << d1.numMax() << endl;
+	
 	d1.printMax();
 	//d1.reset(1);
 	cout << "max is " << d1.findMax();
