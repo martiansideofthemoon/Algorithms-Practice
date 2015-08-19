@@ -8,13 +8,13 @@ There are n objects, numbered 0 to n-1, each of which will have an associated
 count. The constructor should initialize n and all counts to 0.
 The other operations are
 
-1. increment(i) : Increment the count for the ith object.
-2. decrement(i) : Decrement the count for the ith object.
-3. reset(i) : Reset the count of ith object to 0.
-5. count(i) : Return the current count of ith object.
-4. findMax() : Return the maximum count of the objects.
+//1. increment(i) : Increment the count for the ith object.
+//2. decrement(i) : Decrement the count for the ith object.
+//3. reset(i) : Reset the count of ith object to 0.
+//5. count(i) : Return the current count of ith object.
+//4. findMax() : Return the maximum count of the objects.
 5. numMax() : Return the number of objects having maximum count.
-6. printMax() : Print the list of objects with maximum count, in the
+//6. printMax() : Print the list of objects with maximum count, in the
                 order in which they achieved that count value.
 
 
