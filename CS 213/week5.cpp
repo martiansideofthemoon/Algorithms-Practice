@@ -6,7 +6,7 @@ void print_vector(vector<int> &i,vector<int>::iterator i1,vector<int>::iterator 
 {
 	while(i1!=i2)
 	{
-		cout << *i1 << ",";
+		cout << " " << *i1;
 		i1++;
 	}
 	cout << endl;
@@ -41,7 +41,14 @@ bool check_lesser(int i,int j,vector<int> &inv_p,vector<int> &inv_q)
 		return false;
 	if (j>inv_p.size())
 		return true;
-	if (inv_p[i]<inv_p[j] && inv_q[i]<inv_q[j])
+	int count = 0;
+	if (i<j)
+		count++;
+	if (inv_p[i]<inv_p[j])
+		count++;
+	if (inv_q[i]<inv_q[j])
+		count++;
+	if (count>=2)
 		return true;
 	else
 		return false;
@@ -49,7 +56,7 @@ bool check_lesser(int i,int j,vector<int> &inv_p,vector<int> &inv_q)
 void merge(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midway,
 		   vector<int>::iterator end, vector<int> &inv_p,vector<int> &inv_q)
 { 
-	/*****DEBUGGING*****/
+	/*****DEBUGGING*****
 	cout << "Merging arrays :- " << endl;
 	print_vector(a,start,midway);
 	print_vector(a,midway,end);
@@ -92,7 +99,7 @@ void merge(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midw
 void merge_sort(vector<int> &a,vector<int>::iterator start,vector<int>::iterator end,
 				int size, vector<int> &inv_p, vector<int> &inv_q)
 {
-	/*****DEBUGGING*****/
+	/*****DEBUGGING*****
 	cout << "Merge sorting array :- " << endl;
 	print_vector(a,start,end);
 	/*****DEBUGGING*****/
@@ -153,7 +160,7 @@ void merge_count(vector<int> &a,vector<int>::iterator start,vector<int>::iterato
 		}
 		else
 		{
-			if (*max_pos_iter>inv_p[*j])
+			if (*i!=numeric_limits<int>::max() && *max_pos_iter>inv_p[*j])
 				check=false;
 			*k = *j;
 			++j;
@@ -219,18 +226,16 @@ int main()
 	int count = 0;
 	bool check = true;
 	merge_sort(perm_r,forward(perm_r.begin(),1),perm_r.end(),size,inv_p,inv_q);
-	/*merge_sort_count(perm_p,forward(perm_p.begin(),1),perm_p.end(),size,count,inv_p,check);
-	cout << "Number of inversion pairs is " << count << endl;
-	cout << "value of check is " << check << endl;*/
-	print_vector(perm_r);
+	
 	vector<int>dummy_r = perm_r;
+	
 	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_p,check);
 	if (!check)
 	{
 		cout << "inconsistent" << endl;
 		return 0;
 	}
-	bool check = true;
+	check = true;
 	dummy_r = perm_r;
 	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_q,check);
 	if (!check)
@@ -245,7 +250,7 @@ int main()
 	int count_s=0;
 	merge_sort_count(perm_s,forward(perm_s.begin(),1),perm_s.end(),size,count_s,inv_q,check);
 	if (count==(count_p+count_q-count_s)/2)
-		print_list(perm_r);
+		print_vector(perm_r,forward(perm_r.begin(),1),perm_r.end());
 	else
 		cout << "inconsistent" << endl;
 
