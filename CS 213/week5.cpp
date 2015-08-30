@@ -37,15 +37,23 @@ vector<int>::iterator backward(vector<int>::iterator i1,int pos)
 }
 bool check_lesser(int i,int j,vector<int> &inv_p,vector<int> &inv_q)
 {
+	if (i>inv_p.size())
+		return false;
+	if (j>inv_p.size())
+		return true;
 	if (inv_p[i]<inv_p[j] && inv_q[i]<inv_q[j])
 		return true;
 	else
 		return false;
 }
 void merge(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midway,
-		   vector<int>::iterator end,int size_left,int size_right,int &count,
-		   vector<int> &inv_p,vector<int> &inv_q)
-{
+		   vector<int>::iterator end, vector<int> &inv_p,vector<int> &inv_q)
+{ 
+	/*****DEBUGGING*****/
+	cout << "Merging arrays :- " << endl;
+	print_vector(a,start,midway);
+	print_vector(a,midway,end);
+	/*****DEBUGGING*****/
 	vector<int>left;
 	vector<int>right;
 	vector<int>::iterator k = start;
@@ -60,7 +68,7 @@ void merge(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midw
 		right.push_back(*k);
 		++k;
 	}
-	right.push_back(numeric_limits<int>::max());
+	right.push_back(numeric_limits<int>::max()); // Sentinel 
 	vector<int>::iterator i = left.begin(); 
 	vector<int>::iterator j = right.begin();
 	k = start;
@@ -82,14 +90,92 @@ void merge(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midw
 	}
 }
 void merge_sort(vector<int> &a,vector<int>::iterator start,vector<int>::iterator end,
-				int size, int &count, vector<int> &inv_p, vector<int> &inv_q)
+				int size, vector<int> &inv_p, vector<int> &inv_q)
 {
+	/*****DEBUGGING*****/
+	cout << "Merge sorting array :- " << endl;
+	print_vector(a,start,end);
+	/*****DEBUGGING*****/
 	if (*start!=*end && *forward(start,1)!=*end)
 	{
 		vector<int>::iterator midway = forward(start,size/2);
-		merge_sort(a,start,midway,size/2,count,inv_p,inv_q);
-		merge_sort(a,midway,end,size-size/2,count,inv_p,inv_q);
-		merge(a,start,midway,end,size,size-size/2,count,inv_p,inv_q);
+		merge_sort(a,start,midway,size/2,inv_p,inv_q);
+		merge_sort(a,midway,end,size-size/2,inv_p,inv_q);
+		merge(a,start,midway,end,inv_p,inv_q);
+	}
+}
+void merge_count(vector<int> &a,vector<int>::iterator start,vector<int>::iterator midway,
+		   vector<int>::iterator end,int size_left,int size_right,int &count,vector<int> &inv_p,bool &check)
+{
+	/*****DEBUGGING*****
+	cout << "Merging arrays :- " << endl;
+	print_vector(a,start,midway);
+	print_vector(a,midway,end);
+	/*****DEBUGGING*****/
+	vector<int>left;
+	vector<int>maxpos_left (size_left);
+	vector<int>right;
+	vector<int>::iterator k = start;
+	int maxpos = 0;
+	while (k!=midway)
+	{
+		left.push_back(*k);
+		++k;
+	}	
+	for (int m=size_left-1;m>=0;m--)
+	{
+		if (inv_p[left[m]]>maxpos)
+			maxpos=inv_p[left[m]];
+		maxpos_left[m]=maxpos;
+	}
+	
+	left.push_back(numeric_limits<int>::max());
+	while (k!=end)
+	{
+		right.push_back(*k);
+		++k;
+	}
+	right.push_back(numeric_limits<int>::max()); // Sentinel 
+	vector<int>::iterator i = left.begin(); 
+	vector<int>::iterator j = right.begin();
+	vector<int>::iterator max_pos_iter = maxpos_left.begin();
+	k = start;
+	while (k!=end)
+	{
+		//if (check_lesser(*i,*j,inv_p,inv_q))
+		if (*i<*j)
+		{
+			*k = *i;
+			++i;
+			++k;
+			++max_pos_iter;
+			size_left--;
+		}
+		else
+		{
+			if (*max_pos_iter>inv_p[*j])
+				check=false;
+			*k = *j;
+			++j;
+			++k;
+			count+=size_left;
+		}
+	}
+}
+void merge_sort_count(vector<int> &a,vector<int>::iterator start,vector<int>::iterator end,
+				int size, int &count, vector<int> &inv_p,bool &check)
+{
+	/*****DEBUGGING*****
+	cout << "Merge sorting array :- " << endl;
+	print_vector(a,start,end);
+	/*****DEBUGGING*****/
+	if (*start!=*end && *forward(start,1)!=*end)
+	{
+		vector<int>::iterator midway = forward(start,size/2);
+		merge_sort_count(a,start,midway,size/2,count,inv_p,check);
+		merge_sort_count(a,midway,end,size-size/2,count,inv_p,check);
+		merge_count(a,start,midway,end,size/2,size-size/2,count,inv_p,check);
+		
 	}
 }
 int main()
@@ -105,10 +191,10 @@ int main()
 	vector<int> inv_q (size+1);
 	perm_p.push_back(0);
 	perm_q.push_back(0);
-	perm_r.push_back(0);
-	perm_s.push_back(0);
-	inv_p.push_back(0);
-	inv_q.push_back(0);
+	perm_r[0]=0;
+	perm_s[0]=0;
+	inv_p[0]=0;
+	inv_q[0]=0;
 
 	for (int i=1;i<=size;i++)
 	{
@@ -131,8 +217,36 @@ int main()
 	}
 
 	int count = 0;
-	//Sort sequence r using check_lesser routine
-	merge_sort(perm_r,forward(perm_r.begin(),1),perm_r.end(),size,count,inv_p,inv_q);
-	//Now we must check whether it is a consistent permutation
-	
+	bool check = true;
+	merge_sort(perm_r,forward(perm_r.begin(),1),perm_r.end(),size,inv_p,inv_q);
+	/*merge_sort_count(perm_p,forward(perm_p.begin(),1),perm_p.end(),size,count,inv_p,check);
+	cout << "Number of inversion pairs is " << count << endl;
+	cout << "value of check is " << check << endl;*/
+	print_vector(perm_r);
+	vector<int>dummy_r = perm_r;
+	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_p,check);
+	if (!check)
+	{
+		cout << "inconsistent" << endl;
+		return 0;
+	}
+	bool check = true;
+	dummy_r = perm_r;
+	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_q,check);
+	if (!check)
+	{
+		cout << "inconsistent" << endl;
+		return 0;
+	}
+	int count_p=0;
+	merge_sort_count(perm_p,forward(perm_p.begin(),1),perm_p.end(),size,count_p,inv_q,check);
+	int count_q=0;
+	merge_sort_count(perm_q,forward(perm_q.begin(),1),perm_q.end(),size,count_q,inv_q,check);
+	int count_s=0;
+	merge_sort_count(perm_s,forward(perm_s.begin(),1),perm_s.end(),size,count_s,inv_q,check);
+	if (count==(count_p+count_q-count_s)/2)
+		print_list(perm_r);
+	else
+		cout << "inconsistent" << endl;
+
 }
