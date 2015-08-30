@@ -226,21 +226,23 @@ int main()
 	int count = 0;
 	bool check = true;
 	merge_sort(perm_r,forward(perm_r.begin(),1),perm_r.end(),size,inv_p,inv_q);
-	
+	cout << "Permutation after sorting :- ";
+	print_vector(perm_r);
 	vector<int>dummy_r = perm_r;
 	
 	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_p,check);
 	if (!check)
 	{
-		cout << "inconsistent" << endl;
+		cout << "inconsistent as every inversion pair not in p" << endl;
 		return 0;
 	}
 	check = true;
 	dummy_r = perm_r;
-	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count,inv_q,check);
+	int count2=0;
+	merge_sort_count(dummy_r,forward(dummy_r.begin(),1),dummy_r.end(),size,count2,inv_q,check);
 	if (!check)
 	{
-		cout << "inconsistent" << endl;
+		cout << "inconsistent as every inversion pair not in q" << endl;
 		return 0;
 	}
 	int count_p=0;
@@ -252,6 +254,7 @@ int main()
 	if (count==(count_p+count_q-count_s)/2)
 		print_vector(perm_r,forward(perm_r.begin(),1),perm_r.end());
 	else
-		cout << "inconsistent" << endl;
+		cout << "inconsistent with count=" << count << ", count_p=" << count_p << ",count_q=" << count_q
+				<<", count_s=" << count_s << endl;
 
 }
