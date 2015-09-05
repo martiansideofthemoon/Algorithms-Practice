@@ -2,6 +2,7 @@
 #include <iostream>
 #include <limits>
 using namespace std;
+
 void print_vector(vector<int> &i,vector<int>::iterator i1,vector<int>::iterator i2)
 {
 	while(i1!=i2)
@@ -161,7 +162,10 @@ void merge_count(vector<int> &a,vector<int>::iterator start,vector<int>::iterato
 		else
 		{
 			if (*i!=numeric_limits<int>::max() && *max_pos_iter>inv_p[*j])
-				check=false;
+			{
+
+				check=false;		
+			}
 			*k = *j;
 			++j;
 			++k;
@@ -234,6 +238,12 @@ int main()
 	if (!check)
 	{
 		cout << "inconsistent as every inversion pair not in p" << endl;
+		/*
+
+		For getting i,j,k , we can find the inconsistent inversion pair in r. Perform a linear search between
+		the two elements in perm_r for the third element. Any cyclic order will do for i,j,k
+
+		*/
 		return 0;
 	}
 	check = true;
@@ -243,6 +253,12 @@ int main()
 	if (!check)
 	{
 		cout << "inconsistent as every inversion pair not in q" << endl;
+		/*
+
+		For getting i,j,k , we can find the inconsistent inversion pair in r. Perform a linear search between
+		the two elements in perm_r for the third element. Any cyclic order will do for i,j,k
+
+		*/
 		return 0;
 	}
 	int count_p=0;
@@ -254,7 +270,15 @@ int main()
 	if (count==(count_p+count_q-count_s)/2)
 		print_vector(perm_r,forward(perm_r.begin(),1),perm_r.end());
 	else
+	{
 		cout << "inconsistent with count=" << count << ", count_p=" << count_p << ",count_q=" << count_q
 				<<", count_s=" << count_s << endl;
+		/*
+		
+		We can obtain this without using s. We can see that all inversion pairs of p,q are subsets of r.
+
+		*/
+	}
+		
 
 }
