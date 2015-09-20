@@ -65,6 +65,7 @@ D pqr 500
 O stu
 P 0 1000
 C pqr
+E
 
 Sample Output
 0 stu
