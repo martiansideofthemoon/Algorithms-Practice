@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iostream>
 using namespace std;
+//Standard structure to compare two strings for map 
 struct ltstr
 {
   bool operator()(const char* s1, const char* s2) const
