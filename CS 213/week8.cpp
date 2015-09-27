@@ -110,4 +110,9 @@ int main()
 	if ((i1->first)<t2 && (t2-i1->first)>longest)
 		longest=t2-i1->first;
 	cout << longest << endl;
+	/*
+	FOR THE EXTENDED PART, WE MANTAIN THE LANE NUMBER INFORMATION AND AN ARRAY HAVING
+	N ENTRIES FOR THE LONGEST ELEMENT IN EACH OF THESE ENTRIES.
+	FOR THE Ith LANE WE MODIFY THE ITH ENTRY ONLY. SUM FROM 0 to I is Ith ANSWER.
+	*/
 }
