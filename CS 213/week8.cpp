@@ -9,9 +9,10 @@ struct lane {
 	char direction;
 	int position;
 	int num_ships;
-	vector<vector<int> > ships;
+	vector<vector<double> > ships;
 	double forbidden1=0;
 	double forbidden2=0;
+	double offset=0;
 	vector<int> forbidden_time(int ship_no) 
 	{
 		vector<int> ship = ships[ship_no];
@@ -31,7 +32,7 @@ struct lane {
 			forbidden1+=offset;
 			forbidden2+=offset;
 		}
-		vector<int> result;
+		vector<double> result;
 		result.pushback(forbidden1);
 		result.pushback(forbidden2);
 		return result;
