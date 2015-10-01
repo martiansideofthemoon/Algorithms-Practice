@@ -61,7 +61,6 @@ int main()
 		lanes.push_back(l1);
 	}
 	vector<lane>::iterator iter = lanes.begin();
-	//map<int, vector<int> > intervals;
 	map<double, int> intervals;
 	while (iter!=lanes.end())
 	{
@@ -71,7 +70,6 @@ int main()
 			vector<double> forbidden = (*iter).forbidden_time(i);
 			if ((forbidden[0]<t1 && forbidden[1]<t1) || (forbidden[0]>t2 && forbidden[1]>t2))
 				continue;
-			//intervals[forbidden[0]] = forbidden;
 			intervals[forbidden[0]]+=1;
 			intervals[forbidden[1]]+=-1;
 		}
@@ -110,9 +108,4 @@ int main()
 	if ((i1->first)<t2 && (t2-i1->first)>longest)
 		longest=t2-i1->first;
 	cout << longest << endl;
-	/*
-	FOR THE EXTENDED PART, WE MANTAIN THE LANE NUMBER INFORMATION AND AN ARRAY HAVING
-	N ENTRIES FOR THE LONGEST ELEMENT IN EACH OF THESE ENTRIES.
-	FOR THE Ith LANE WE MODIFY THE ITH ENTRY ONLY. SUM FROM 0 to I is Ith ANSWER.
-	*/
 }
