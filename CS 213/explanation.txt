@@ -1,0 +1,13 @@
+This is another way of viewing the array constructed at level i >= 1.
+
+If l(j) lies in the interval [kn/2^{i-1}, (k+1)n/2^{i-1}) for 
+0 <= k < 2^{i-1} then the jth entry in the first array is the number of 
+numbers in l(0) to l(j) that are in the interval 
+[kn/2^{i-1} + n/2^i, (k+1)n/2^{i-1}).
+
+If l(j) lies in [kn/2^{i-1}+n/2^i, (k+1)n/2^{i-1}) then the second
+array stores the largest index m < j such that l(m) is in
+[kn/2^{i-1},kn/2^{i-1}+n/2^i), otherwise it stores the largest index
+such that l(m) lies in [kn/2^{i-1}+n/2^i, (k+1)n/2^{i-1}).
+
+You can construct this in O(n) time.
