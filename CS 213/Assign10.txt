@@ -92,6 +92,10 @@ Submit your file as RollNo_10.cpp
 
 
 
+Note that at the first level, if l(j) = -1, we need  to store the largest k for which l(k) >= 0 and change the query (i,j) to (i,k).
+
+
+
 
 
 
